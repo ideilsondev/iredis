@@ -14,8 +14,8 @@ interface AppState {
   setActiveConnection: (conn: ConnectionRecord | null) => void;
   activeKey: string | null;
   setActiveKey: (key: string | null) => void;
-  activeTab: 'connections' | 'keys' | 'events';
-  setActiveTab: (tab: 'connections' | 'keys' | 'events') => void;
+  activeTab: 'connections' | 'keys' | 'events' | 'dashboard';
+  setActiveTab: (tab: 'connections' | 'keys' | 'events' | 'dashboard') => void;
   unreadEvents: number;
   incrementUnreadEvents: () => void;
   clearUnreadEvents: () => void;
@@ -35,7 +35,7 @@ export const useAppStore = create<AppState>()(persist((set) => ({
   setNewChannelDialogOpen: (isOpen) => set({ isNewChannelDialogOpen: isOpen }),
   setConnectionFormOpen: (isOpen, conn = null) => set({ isConnectionFormOpen: isOpen, editingConn: conn }),
   activeConnection: null,
-  setActiveConnection: (conn) => set({ activeConnection: conn, activeTab: conn ? 'keys' : 'connections', activeKey: null }),
+  setActiveConnection: (conn) => set({ activeConnection: conn, activeTab: conn ? 'dashboard' : 'connections', activeKey: null }),
   activeKey: null,
   setActiveKey: (key) => set({ activeKey: key }),
   activeTab: 'connections',

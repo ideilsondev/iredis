@@ -56,11 +56,26 @@ pub async fn delete_key(pool: &Pool, key: &str) -> Result<u32, CommandError> {
     Ok(deleted)
 }
 
-pub async fn set_string(pool: &Pool, key: &str, value: &str) -> Result<(), CommandError> {
+pub async fn set_string(pool: &Pool, key: &str, value: &str, ttl: Option<u64>) -> Result<(), CommandError> {
     let mut conn = pool
         .get()
         .await
         .map_err(|e| CommandError::ConnectionFailed(e.to_string()))?;
-    let _: () = conn.set(key, value).await?;
+    
+    if let Some(seconds) = ttl {
+        let _: () = conn.set_ex(key, value, seconds).await?;
+    } else {
+        let _: () = conn.set(key, value).await?;
+    }
+    
     Ok(())
+}
+
+pub async fn get_ttl(pool: &Pool, key: &str) -> Result<i64, CommandError> {
+    let mut conn = pool
+        .get()
+        .await
+        .map_err(|e| CommandError::ConnectionFailed(e.to_string()))?;
+    let ttl: i64 = redis::cmd("TTL").arg(key).query_async(&mut conn).await?;
+    Ok(ttl)
 }

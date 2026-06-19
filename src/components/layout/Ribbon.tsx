@@ -1,5 +1,5 @@
 import { useAppStore } from '../../stores/appStore';
-import { FileText, Radio, Database } from 'lucide-react';
+import { FileText, Radio, Database, Activity } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 export default function Ribbon() {
@@ -19,6 +19,17 @@ export default function Ribbon() {
           )}
         >
           Conexões
+        </button>
+        <button 
+          onClick={() => setActiveTab('dashboard')}
+          className={cn(
+            "px-4 py-1.5 text-xs rounded-t border-t border-x transition-colors z-10 -mb-px relative flex items-center gap-2",
+            activeTab === 'dashboard'
+              ? "bg-background border-border text-foreground" 
+              : "border-transparent text-muted-foreground hover:bg-muted hover:text-foreground"
+          )}
+        >
+          Dashboard
         </button>
         <button 
           onClick={() => setActiveTab('keys')}
@@ -70,7 +81,7 @@ export default function Ribbon() {
                   <FileText className="w-6 h-6 mb-1 text-[#4F81BD]" />
                   Nova Chave
                 </button>
-              ) : (
+              ) : activeTab === 'events' ? (
                 <button 
                   onClick={() => setNewChannelDialogOpen(true)}
                   disabled={!activeConnection}
@@ -79,7 +90,15 @@ export default function Ribbon() {
                   <Radio className="w-6 h-6 mb-1 text-[#4F81BD]" />
                   Novo Canal
                 </button>
-              )}
+              ) : activeTab === 'dashboard' ? (
+                <button 
+                  disabled={!activeConnection}
+                  className="flex flex-col items-center p-2 hover:bg-muted rounded text-xs min-w-[60px] disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Activity className="w-6 h-6 mb-1 text-[#4F81BD]" />
+                  Estatísticas
+                </button>
+              ) : null}
             </div>
             <span className="text-[11px] text-muted-foreground uppercase tracking-wider">Operações</span>
           </div>

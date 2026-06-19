@@ -41,6 +41,10 @@ Avisos críticos ou mensagens de tempo real devem atingir o usuário de duas for
 1.  **In-App Toast:** Um card animado (slide-in) no canto superior direito que exibe o resumo e some sozinho após X segundos.
 2.  **OS Native Notification:** Para sistemas minimizados, disparamos a notificação nativa do Windows/Linux (via Rust) acompanhada de feedback sonoro (bip).
 
+### Entradas de Dados (Stealth Inputs)
+*   **Zero-Distraction Focus:** Campos de texto, senhas e textareas não devem exibir bordas vibrantes (`ring` ou cores de destaque vivas) ao receber foco. 
+*   **Comportamento:** O campo de input deve ter `bg-input` e borda estática sutil. Ao receber o foco, ele deve transicionar levemente o fundo para `bg-secondary` e remover qualquer delineamento nativo (`outline-none`). Isso cria uma sensação de formulário nativo embebido do sistema operacional, parecendo mais corporativo e limpo.
+
 ---
 
 ## 4. Stack Tecnológica e Gerenciamento de Estado
@@ -64,6 +68,7 @@ Ao inicializar um projeto que siga o padrão "iRedis", garanta os seguintes comp
 - [ ] **`Ribbon`**: Componente de navegação fixa no topo. Recebe o contexto de `activeTab` do Zustand.
 - [ ] **`DialogContext/Manager`**: Singleton de UI (modal único montado no topo da DOM que altera seu "child" dependendo do formulário solicitado).
 - [ ] **`WorkspaceArea`**: Componente que reage ao `activeTab` usando `display: hidden` (mantendo componentes renderizados em background para não perder estado, como listeners WebSockets ou Pub/Sub).
+- [ ] **`Input` / `Textarea` (Camada UI)**: Componentes envelopados para garantir estética "Stealth" (Focus sem anel colorido, apenas escurecendo levemente o fundo via `focus:bg-secondary`). Jamais utilizar tags nativas desenhadas soltas.
 - [ ] **Tematização:** Paleta de cores neutra e profissional. Cinzas, azuis de destaque e vermelho apenas para elementos destrutivos/badges urgentes.
 
 ---

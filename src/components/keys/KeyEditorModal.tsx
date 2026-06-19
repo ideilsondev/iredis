@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useAppStore } from '../../stores/appStore';
-import { getKeyType, getString, deleteKey, setString } from '../../api/keys';
+import { getKeyType, getString, deleteKey, setString, getTtl } from '../../api/keys';
 import { useDialogStore } from '../../stores/dialogStore';
 import { Trash2 } from 'lucide-react';
 import DraggableWindow from '../ui/DraggableWindow';
+import { Textarea } from '../ui/Textarea';
 
 interface KeyEditorModalProps {
   onClose: () => void;
@@ -17,6 +18,7 @@ export default function KeyEditorModal({ onClose, onDeleted }: KeyEditorModalPro
   const [type, setType] = useState<string>('');
   const [value, setValue] = useState<string>('');
   const [originalValue, setOriginalValue] = useState<string>('');
+  const [ttl, setTtl] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -28,6 +30,13 @@ export default function KeyEditorModal({ onClose, onDeleted }: KeyEditorModalPro
       try {
         const keyType = await getKeyType(activeKey);
         setType(keyType);
+        
+        try {
+          const ttlVal = await getTtl(activeKey);
+          setTtl(ttlVal);
+        } catch (e) {
+          console.error("Failed to get TTL", e);
+        }
         
         if (keyType === 'string') {
           const val = await getString(activeKey);
@@ -90,7 +99,17 @@ export default function KeyEditorModal({ onClose, onDeleted }: KeyEditorModalPro
         <div className="flex items-center justify-between px-6 py-3 border-b border-border bg-secondary/10 shrink-0">
           <div className="flex flex-col">
             <span className="font-mono text-sm text-foreground font-medium select-all">{activeKey}</span>
-            <span className="text-[11px] text-[#4F81BD] uppercase font-bold tracking-wider">{type || 'Loading...'}</span>
+            <div className="flex items-center gap-2 mt-0.5">
+              <span className="text-[11px] text-[#4F81BD] uppercase font-bold tracking-wider">{type || 'Loading...'}</span>
+              {ttl !== null && (
+                <>
+                  <span className="text-muted-foreground/40">•</span>
+                  <span className={`text-[11px] uppercase font-bold tracking-wider ${ttl > 0 ? 'text-amber-500' : 'text-emerald-600'}`}>
+                    {ttl > 0 ? `TTL: ${ttl}s` : ttl === -1 ? 'Não expira' : 'Não encontrado'}
+                  </span>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
@@ -103,11 +122,11 @@ export default function KeyEditorModal({ onClose, onDeleted }: KeyEditorModalPro
           ) : (
             <div className="flex flex-col gap-2 h-full relative">
               <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Valor da Chave</label>
-              <textarea 
+              <Textarea 
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
                 readOnly={type !== 'string'}
-                className="w-full h-full p-4 text-[13px] font-mono bg-input border border-border rounded-sm text-foreground focus:bg-background focus:border-[#4F81BD] outline-none resize-none shadow-inner"
+                className="h-full p-4 font-mono resize-none shadow-inner"
               />
             </div>
           )}

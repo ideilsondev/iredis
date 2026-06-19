@@ -3,6 +3,7 @@ import Ribbon from './Ribbon';
 import CustomDialog from '../ui/CustomDialog';
 import KeyTable from '../workspace/KeyTable';
 import PubSubWorkspace from '../workspace/PubSubWorkspace';
+import DashboardWorkspace from '../workspace/DashboardWorkspace';
 import ConnectionList from '../connections/ConnectionList';
 import { Database, Activity, BellRing, X } from 'lucide-react';
 import { useEffect } from 'react';
@@ -73,6 +74,10 @@ export default function AppShell() {
               <p>Nenhuma conexão ativa. Vá em "Conexões" para conectar.</p>
             </div>
           )}
+        </div>
+
+        <div className={`flex-1 flex overflow-hidden ${activeTab === 'dashboard' ? '' : 'hidden'}`}>
+          <DashboardWorkspace />
         </div>
       </main>
 

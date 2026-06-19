@@ -21,6 +21,10 @@ export async function deleteKey(key: string): Promise<number> {
   return await invoke<number>('redis_delete_key', { key });
 }
 
-export async function setString(key: string, value: string): Promise<void> {
-  return await invoke<void>('redis_set_string', { key, value });
+export async function setString(key: string, value: string, ttl?: number): Promise<void> {
+  return await invoke<void>('redis_set_string', { key, value, ttl: ttl !== undefined ? ttl : null });
+}
+
+export async function getTtl(key: string): Promise<number> {
+  return await invoke<number>('redis_get_ttl', { key });
 }

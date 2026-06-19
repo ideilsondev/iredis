@@ -46,8 +46,18 @@ pub async fn redis_delete_key(
 pub async fn redis_set_string(
     key: String,
     value: String,
+    ttl: Option<u64>,
     pool_manager: State<'_, Arc<RedisPoolManager>>,
 ) -> Result<(), CommandError> {
     let pool = pool_manager.get_active_pool().await?;
-    keys::set_string(&pool, &key, &value).await
+    keys::set_string(&pool, &key, &value, ttl).await
+}
+
+#[tauri::command]
+pub async fn redis_get_ttl(
+    key: String,
+    pool_manager: State<'_, Arc<RedisPoolManager>>,
+) -> Result<i64, CommandError> {
+    let pool = pool_manager.get_active_pool().await?;
+    keys::get_ttl(&pool, &key).await
 }

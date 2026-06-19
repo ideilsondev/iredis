@@ -27,8 +27,14 @@ pub fn run() {
             app.manage(pubsub_manager);
 
             if let Some(main_window) = app.get_webview_window("main") {
-                if let Some(icon) = app.default_window_icon() {
-                    let _ = main_window.set_icon(icon.clone());
+                #[cfg(any(target_os = "linux", target_os = "windows"))]
+                {
+                    use tauri::image::Image;
+                    if let Ok(icon) = Image::from_bytes(include_bytes!("../icons/32x32.png")) {
+                        let _ = main_window.set_icon(icon);
+                    } else if let Some(icon) = app.default_window_icon() {
+                        let _ = main_window.set_icon(icon.clone());
+                    }
                 }
             }
 
@@ -47,9 +53,11 @@ pub fn run() {
             commands::keys::redis_get_string,
             commands::keys::redis_set_string,
             commands::keys::redis_delete_key,
+            commands::keys::redis_get_ttl,
             commands::pubsub::pubsub_subscribe,
             commands::pubsub::pubsub_unsubscribe,
             commands::pubsub::pubsub_publish,
+            commands::info::get_server_info,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

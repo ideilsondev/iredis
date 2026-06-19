@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { createConnection, updateConnection, testConnection, ConnectionRecord } from '../../api/connections';
 import { useDialogStore } from '../../stores/dialogStore';
 import { Eye, EyeOff } from 'lucide-react';
+import { Input } from '../ui/Input';
 
 interface ConnectionFormProps {
   initialData?: ConnectionRecord | null;
@@ -81,35 +82,32 @@ export default function ConnectionForm({ initialData, onSuccess, onCancel }: Con
     <form onSubmit={handleSubmit} className="flex flex-col gap-6 w-full bg-card p-6">
       <div className="grid gap-1.5">
         <label className="text-[13px] font-medium text-foreground">Nome</label>
-        <input 
+        <Input 
           type="text" 
           value={formData.name}
           onChange={(e) => setFormData({...formData, name: e.target.value})}
           placeholder="Ex: Redis Produção"
           required
-          className="w-full bg-input border border-border rounded-sm px-3 py-1.5 text-[13px] text-foreground focus:bg-secondary outline-none"
         />
       </div>
 
       <div className="grid grid-cols-[3fr_1fr] gap-4">
         <div className="grid gap-1.5">
           <label className="text-[13px] font-medium text-foreground">Host</label>
-          <input 
+          <Input 
             type="text" 
             value={formData.host}
             onChange={(e) => setFormData({...formData, host: e.target.value})}
             required
-            className="w-full bg-input border border-border rounded-sm px-3 py-1.5 text-[13px] text-foreground focus:bg-secondary outline-none"
           />
         </div>
         <div className="grid gap-1.5">
           <label className="text-[13px] font-medium text-foreground">Porta</label>
-          <input 
+          <Input 
             type="number" 
             value={formData.port}
             onChange={(e) => setFormData({...formData, port: parseInt(e.target.value)})}
             required
-            className="w-full bg-input border border-border rounded-sm px-3 py-1.5 text-[13px] text-foreground focus:bg-secondary outline-none"
           />
         </div>
       </div>
@@ -117,11 +115,11 @@ export default function ConnectionForm({ initialData, onSuccess, onCancel }: Con
       <div className="grid gap-1.5">
         <label className="text-[13px] font-medium text-foreground">Senha (Opcional)</label>
         <div className="relative flex items-center">
-          <input 
+          <Input 
             type={showPassword ? "text" : "password"} 
             value={formData.password}
             onChange={(e) => setFormData({...formData, password: e.target.value})}
-            className="w-full bg-input border border-border rounded-sm pl-3 pr-9 py-1.5 text-[13px] text-foreground focus:bg-secondary outline-none"
+            className="pl-3 pr-9"
           />
           <button
             type="button"
@@ -135,22 +133,20 @@ export default function ConnectionForm({ initialData, onSuccess, onCancel }: Con
       
       <div className="grid gap-1.5">
         <label className="text-[13px] font-medium text-foreground">Usuário (ACL - Opcional)</label>
-        <input 
+        <Input 
           type="text" 
           value={formData.username}
           onChange={(e) => setFormData({...formData, username: e.target.value})}
-          className="w-full bg-input border border-border rounded-sm px-3 py-1.5 text-[13px] text-foreground focus:bg-secondary outline-none"
         />
       </div>
       
       <div className="grid gap-1.5 w-1/3">
         <label className="text-[13px] font-medium text-foreground">Banco (Index)</label>
-        <input 
+        <Input 
           type="number" 
           min="0"
           value={formData.dbNumber}
           onChange={(e) => setFormData({...formData, dbNumber: parseInt(e.target.value) || 0})}
-          className="w-full bg-input border border-border rounded-sm px-3 py-1.5 text-[13px] text-foreground focus:bg-secondary outline-none"
         />
       </div>
 

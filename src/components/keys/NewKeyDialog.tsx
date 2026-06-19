@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { useDialogStore } from '../../stores/dialogStore';
 import { setString } from '../../api/keys';
 import DraggableWindow from '../ui/DraggableWindow';
+import { Input } from '../ui/Input';
+import { Textarea } from '../ui/Textarea';
 
 interface Props {
   onClose: () => void;
@@ -12,8 +14,32 @@ interface Props {
 export default function NewKeyDialog({ onClose, onSuccess }: Props) {
   const [keyName, setKeyName] = useState('');
   const [value, setValue] = useState('');
+  const [ttl, setTtl] = useState('');
   const [loading, setLoading] = useState(false);
   const { showDialog } = useDialogStore();
+
+  const parseTtl = (input: string): number | undefined => {
+    const trimmed = input.trim().toLowerCase();
+    if (!trimmed) return undefined;
+
+    if (/^\d+$/.test(trimmed)) {
+      return parseInt(trimmed, 10);
+    }
+
+    const match = trimmed.match(/^(\d+)([smhd])$/);
+    if (!match) return NaN;
+
+    const val = parseInt(match[1], 10);
+    const unit = match[2];
+
+    switch (unit) {
+      case 's': return val;
+      case 'm': return val * 60;
+      case 'h': return val * 60 * 60;
+      case 'd': return val * 60 * 60 * 24;
+      default: return NaN;
+    }
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,7 +47,18 @@ export default function NewKeyDialog({ onClose, onSuccess }: Props) {
 
     setLoading(true);
     try {
-      await setString(keyName.trim(), value);
+      const parsedTtl = parseTtl(ttl);
+      if (parsedTtl !== undefined && isNaN(parsedTtl)) {
+        showDialog({
+          title: 'Erro de Validação',
+          message: 'Formato de TTL inválido. Use um número (ex: 60) ou sufixos s, m, h, d (ex: 1m, 2h, 1d).',
+          type: 'error'
+        });
+        setLoading(false);
+        return;
+      }
+
+      await setString(keyName.trim(), value, parsedTtl);
       onSuccess(keyName.trim());
       onClose();
     } catch (error) {
@@ -40,11 +77,10 @@ export default function NewKeyDialog({ onClose, onSuccess }: Props) {
       <form onSubmit={handleSave} className="p-5 flex flex-col gap-4">
         <div className="flex flex-col gap-1.5">
           <label className="text-[13px] font-medium text-foreground">Nome da Chave</label>
-          <input
+          <Input
             type="text"
             value={keyName}
             onChange={(e) => setKeyName(e.target.value)}
-            className="w-full px-2.5 py-1.5 text-sm bg-input border border-border/80 rounded-sm focus:border-[#0078d4] focus:ring-1 focus:ring-[#0078d4] outline-none transition-colors"
             placeholder="ex: sessao:usuario:123"
             autoFocus
             required
@@ -52,11 +88,21 @@ export default function NewKeyDialog({ onClose, onSuccess }: Props) {
         </div>
 
         <div className="flex flex-col gap-1.5">
+          <label className="text-[13px] font-medium text-foreground">TTL / Expiração <span className="text-muted-foreground font-normal">- Opcional</span></label>
+          <Input
+            type="text"
+            value={ttl}
+            onChange={(e) => setTtl(e.target.value)}
+            placeholder="ex: 60s, 1m, 2h, 1d (Deixe em branco p/ não expirar)"
+          />
+        </div>
+
+        <div className="flex flex-col gap-1.5">
           <label className="text-[13px] font-medium text-foreground">Valor</label>
-          <textarea
+          <Textarea
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            className="w-full px-2.5 py-1.5 text-sm bg-input border border-border/80 rounded-sm focus:border-[#0078d4] focus:ring-1 focus:ring-[#0078d4] outline-none transition-colors font-mono min-h-[120px] resize-y leading-relaxed"
+            className="font-mono min-h-[120px] leading-relaxed"
             placeholder="Digite o valor..."
           />
         </div>
