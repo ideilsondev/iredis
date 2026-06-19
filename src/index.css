@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #4F81BD;
+  --color-primary-foreground: #FFFFFF;
+  --color-background: #FFFFFF;
+  --color-foreground: #111111;
+  --color-card: #FFFFFF;
+  --color-card-foreground: #111111;
+  --color-secondary: #F5F6F7;
+  --color-secondary-foreground: #333333;
+  --color-muted: #D9DDE1;
+  --color-muted-foreground: #7A828C;
+  --color-border: #B9C0C8;
+  --color-input: #FFFFFF;
+  --color-sidebar: #F5F6F7;
+  --color-sidebar-accent: #E6F2FA;
+}
+
+@custom-variant dark (&:is(.dark *));
+
+@layer base {
+  .dark {
+    --color-primary: #4F81BD;
+    --color-primary-foreground: #FFFFFF;
+    --color-background: #000000;
+    --color-foreground: #F5F6F7;
+    --color-card: #1A202C;
+    --color-card-foreground: #F5F6F7;
+    --color-secondary: #2D3748;
+    --color-secondary-foreground: #CBD5E0;
+    --color-muted: #4A5568;
+    --color-muted-foreground: #A0AEC0;
+    --color-border: #4A5568;
+    --color-input: #1A202C;
+    --color-sidebar: #1A202C;
+    --color-sidebar-accent: #2A4365;
+  }
+
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-family: "Segoe UI", "Inter", system-ui, sans-serif;
+  }
+}
+
+/* Base Inputs Focus Rule - Fluent Desktop */
+@layer components {
+  input, textarea, select {
+    @apply w-full bg-input border border-border rounded-sm px-3 py-1.5
+           text-[13px] text-foreground placeholder:text-muted-foreground
+           focus:bg-secondary focus:border-border
+           transition-colors outline-none ring-0 focus:ring-0;
+  }
+}
